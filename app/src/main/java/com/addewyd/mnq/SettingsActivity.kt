@@ -15,10 +15,12 @@ import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
 import android.preference.RingtonePreference
 import android.text.TextUtils
+import android.content.SharedPreferences
+
 import android.view.MenuItem
 import android.support.v4.app.NavUtils
-//import android.R
-
+import java.io.File
+import android.widget.Toast
 
 
 /**
@@ -37,7 +39,6 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         super.onCreate(savedInstanceState)
 
         setupActionBar()
-
     }
 
     /**
@@ -88,16 +89,34 @@ class SettingsActivity : AppCompatPreferenceActivity() {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     class GeneralPreferenceFragment : PreferenceFragment() {
+
+        val APP_PREFERENCES:String = "mnqsettings"
+
+
+
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.pref_general)
             setHasOptionsMenu(true)
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
+            var mSettings = PreferenceManager.getDefaultSharedPreferences(activity)
+
+             //=  ma.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
+
+            var p = "No path"
+            if (mSettings?.contains("save_path") ?: false) {
+
+                p = mSettings.getString("save_path", "")
+
+            }
+            Toast.makeText(activity, p, Toast.LENGTH_LONG).show()
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("save_path"))
+            var editor = mSettings?.edit()
+            editor?.putString("save_path", p)
+            editor?.commit()
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -116,7 +135,8 @@ class SettingsActivity : AppCompatPreferenceActivity() {
          * A preference value change listener that updates the preference's summary
          * to reflect its new value.
          */
-        private val sBindPreferenceSummaryToValueListener = Preference.OnPreferenceChangeListener { preference, value ->
+        private val sBindPreferenceSummaryToValueListener
+                = Preference.OnPreferenceChangeListener { preference, value ->
             val stringValue = value.toString()
 
             if (false) {
@@ -125,6 +145,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                 // For all other preferences, set the summary to the value's
                 // simple string representation.
                 preference.summary = stringValue
+
             }
             true
         }

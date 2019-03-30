@@ -1,14 +1,20 @@
 package com.addewyd.mnq
 
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.Toast
 import android.view.*
 import android.content.Intent
-
+import android.widget.TextView
+import android.preference.Preference
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 
 class MainActivity : AppCompatActivity() {
+
+    var tv:TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +25,26 @@ class MainActivity : AppCompatActivity() {
 
         val lpView = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false)
+
+        tv = TextView(this)
+        tv?.height = 102
+        tv?.text = "TextView"
+        tv?.layoutParams = lpView
+        linLayout.addView(tv)
+
+        var mSettings = PreferenceManager.getDefaultSharedPreferences(this)
+
+        if (mSettings?.contains("save_path") ?: false) {
+
+            var gf = mSettings.getString("save_path", "")
+            tv?.setText("Save path: $gf")
+
+        } else {
+
+            tv?.text = "Save path: None"
+        }
 
         // setContentView(R.layout.activity_main)
     }
